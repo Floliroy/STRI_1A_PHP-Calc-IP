@@ -5,12 +5,12 @@
     
     <link rel="stylesheet" href="format.css">
 <?php
-$ip = "";
-$maskIp = "";
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $ip = $_POST["adresseIp"];
-    $maskIp = $_POST["masque"];
-}
+    $ip = "";
+    $maskIp = "";
+    if($_SERVER["REQUEST_METHOD"] == "POST"){
+        $ip = $_POST["adresseIp"];
+        $maskIp = $_POST["masque"];
+    }
 ?>    
 
 </head>
