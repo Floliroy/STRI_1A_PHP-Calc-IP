@@ -1,0 +1,31 @@
+body{
+    margin: 5%;
+    font-family: "Trebuchet MS", Verdana, Geneva, Helvetica, sans-serif;
+}
+
+form{
+    border: 1px dotted black;
+    width: calc(250px + 30%);
+}
+
+td:not(.form){
+    padding-right: 15px;
+}
+
+.ip{
+    color: blue;
+}
+
+.classe{
+    color: green;
+}
+
+.mask{
+    color: red;
+}
+
+.result{
+    font-family: monospace;
+    white-space: pre;
+}
+
