@@ -20,15 +20,21 @@
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         $ip = $_POST["adresseIp"];
         $maskIp = $_POST["masque"];
+        //pour avoir le masque sur 4 octets
         $maskIp = formatMasque($maskIp);
+        //pour avoir le masque sur 2 decimals
         $mask = adresseToMasque($maskIp);
+        //pour avoir l'inverse du masque
         $wild = getWildcard($maskIp);
         
         if(isAdresseIpValide($ip) && isAdresseIpValide($maskIp)){
+            //on affcihe le tableau seulement si les adresses sont valides
             $doitAfficherTableau = true;
             $network = getNetworkAdress($ip, $maskIp);
             $broadcast = getBroadcastAdress($ip, $wild);
+            //host min est l'adresse apres celle de réseau
             $hostMin = getIpAfter($network);
+            //host max est l'adresse avant celle de diffusion
             $hostMax = getIpBefore($broadcast);
         }
     }
@@ -47,6 +53,7 @@
             <tr>
                 <td class="form"><input type="text" name="adresseIp" value="<?=$ip ?>"/> /</td>
                 <td class="form">
+                    <!-- Si on a une requete POST alors on récupère ce qui avait été envoyé pour le masque dans cette requete -->
                     <input type="text" name="masque" value="<?=$_SERVER["REQUEST_METHOD"] == "POST" ? $_POST["masque"] : "" ?>"/>
                 </td>
             </tr>
@@ -62,8 +69,13 @@
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         if($doitAfficherTableau){
 ?>
+        <!-- Tableau complet des résultats -->
+        <!-- On affichera d'abord le nom de la ligne -->
+        <!-- Puis l'adresse en decimal -->
+        <!-- Et enfin l'adresse en binaire -->
         <table class="result">
         <tbody>
+            <!-- 3 lignes correspondant aux valeurs d'entrées -->
             <tr>
                 <td>Adresse :</td>
                 <td class="ip"><?=$ip ?></td>
@@ -84,6 +96,7 @@
                 <td colspan="3">=></td>
             </tr>
 
+            <!-- 4 lignes correspondant aux calculs fait sur les valeurs d'entrées -->
             <tr>
                 <td>Réseau :</td>
                 <td class="ip"><?="$network / $mask" ?></td>
@@ -113,6 +126,7 @@
         </table>
 <?php
         }else{
+            //Si une des valeurs d'entrées n'est pas bonne on affiche un message
             echo "L'adresse $ip et/ou $maskIp ne sont pas des adresses valide";
         }
     }
