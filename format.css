@@ -6,7 +6,7 @@ body{
 
 form{
     border: 1px dotted black;
-    width: calc(250px + 30%);
+    width: 650px;
 }
 
 td:not(.form){
@@ -28,5 +28,6 @@ td:not(.form){
 .result{
     font-family: monospace;
     white-space: pre;
+    width: 650px;
 }
 
