@@ -1,6 +1,7 @@
 body{
     margin: 5%;
     font-family: "Trebuchet MS", Verdana, Helvetica, sans-serif;
+    min-width: 600px;
 }
 
 form{
