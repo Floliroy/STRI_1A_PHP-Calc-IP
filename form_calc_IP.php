@@ -1,3 +1,8 @@
+<?php
+    /* J'ai trouvé un moyen de set les cookies dans une fonction interne au body pour qu'il soit incrémenté seulement si on utilise le formulaire avec l'output buffering */
+    //$nbUtil = isset($_COOKIE["nbUtil"]) ? $_COOKIE["nbUtil"]+1 : 1;
+    //setcookie("nbUtil", strval($nbUtil));
+?>
 <!DOCTYPE html>
 <head>
 	<meta charset="UTF-8"/>
@@ -18,6 +23,12 @@
     $hostMax;
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
+        //on incrémente le cookie d'utilisation de la page
+        ob_start();
+        $nbUtil = isset($_COOKIE["nbUtil"]) ? $_COOKIE["nbUtil"]+1 : 1;
+        setcookie("nbUtil", strval($nbUtil));
+        ob_end_flush();
+
         $ip = $_POST["adresseIp"];
         $maskIp = $_POST["masque"];
         //pour avoir le masque sur 4 octets
@@ -42,95 +53,102 @@
 
 </head>
 <body>
-    <h1>Calculateur d'IP</h1>
-    <form method="post" action="form_calc_IP.php">
-        <table>
-        <tbody>
-            <tr>
-                <td class="form"><b>Adresse IP</b></td>
-                <td class="form"><b>Masque</b></td>
-            </tr>
-            <tr>
-                <td class="form"><input type="text" name="adresseIp" value="<?=$ip ?>"/> /</td>
-                <td class="form">
-                    <!-- Si on a une requete POST alors on récupère ce qui avait été envoyé pour le masque dans cette requete -->
-                    <input type="text" name="masque" value="<?=$_SERVER["REQUEST_METHOD"] == "POST" ? $_POST["masque"] : "" ?>"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" class="form"><input type="submit" value="Calculer"/></td>
-            </tr>
-        </tbody>
-        </table>
-    </form>
-    <br/><br/>
-    
 <?php
-    if($_SERVER["REQUEST_METHOD"] == "POST"){
-        if($doitAfficherTableau){
+    if($nbUtil <= 3){
 ?>
-        <!-- Tableau complet des résultats -->
-        <!-- On affichera d'abord le nom de la ligne -->
-        <!-- Puis l'adresse en decimal -->
-        <!-- Et enfin l'adresse en binaire -->
-        <table class="result">
-        <tbody>
-            <!-- 3 lignes correspondant aux valeurs d'entrées -->
-            <tr>
-                <td>Adresse :</td>
-                <td class="ip"><?=$ip ?></td>
-                <td colspan="2"><?=formatBinaire(adresseDecToBin($ip), $mask) ?></td>
-            </tr>
-            <tr>
-                <td>Masque :</td>
-                <td class="ip"><?="$maskIp => $mask" ?></td>
-                <td colspan="2" class="mask"><?=formatBinaire(adresseDecToBin($maskIp), $mask) ?></td>
-            </tr>
-            <tr>
-                <td>Inverse :</td>
-                <td class="ip"><?=$wild ?></td>
-                <td colspan="2"><?=formatBinaire(adresseDecToBin($wild), $mask) ?></td>
-            </tr>
-            
-            <tr>
-                <td colspan="3">=></td>
-            </tr>
-
-            <!-- 4 lignes correspondant aux calculs fait sur les valeurs d'entrées -->
-            <tr>
-                <td>Réseau :</td>
-                <td class="ip"><?="$network / $mask" ?></td>
-                <td><?=formatBinaire(adresseDecToBin($network), $mask) ?></td>
-                <td class="classe">(Classe <?=getClasseAdresseIp($network) ?>)</td>
-            </tr>
-            <tr>
-                <td>Diffusion :</td>
-                <td class="ip"><?=$broadcast ?></td>
-                <td colspan="2"><?=formatBinaire(adresseDecToBin($broadcast), $mask) ?></td>
-            </tr>
-            <tr>
-                <td>HostMin :</td>
-                <td class="ip"><?=$hostMin ?></td>
-                <td colspan="2"><?=formatBinaire(adresseDecToBin($hostMin), $mask) ?></td>
-            </tr>
-            <tr>
-                <td>HostMax :</td>
-                <td class="ip"><?=$hostMax ?></td>
-                <td colspan="2"><?=formatBinaire(adresseDecToBin($hostMax), $mask) ?></td>
-            </tr>
-            <tr>
-                <td>Host/Net :</td>
-                <td colspan="3" class="ip"><?=getHostByNet($mask) ?></td>
-            </tr>
-        </tbody>
-        </table>
+        <h1>Calculateur d'IP</h1>
+        <form method="post" action="form_calc_IP.php">
+            <table>
+            <tbody>
+                <tr>
+                    <td class="form"><b>Adresse IP</b></td>
+                    <td class="form"><b>Masque</b></td>
+                </tr>
+                <tr>
+                    <td class="form"><input type="text" name="adresseIp" value="<?=$ip ?>"/> /</td>
+                    <td class="form">
+                        <!-- Si on a une requete POST alors on récupère ce qui avait été envoyé pour le masque dans cette requete -->
+                        <input type="text" name="masque" value="<?=$_SERVER["REQUEST_METHOD"] == "POST" ? $_POST["masque"] : "" ?>"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="form"><input type="submit" value="Calculer"/></td>
+                </tr>
+            </tbody>
+            </table>
+        </form>
+        <br/><br/>
+        
 <?php
-        }else{
-            //Si une des valeurs d'entrées n'est pas bonne on affiche un message
-            echo "L'adresse $ip et/ou $maskIp ne sont pas des adresses valide";
+        if($_SERVER["REQUEST_METHOD"] == "POST"){
+            if($doitAfficherTableau){
+?>
+            <!-- Tableau complet des résultats -->
+            <!-- On affichera d'abord le nom de la ligne -->
+            <!-- Puis l'adresse en decimal -->
+            <!-- Et enfin l'adresse en binaire -->
+            <table class="result">
+            <tbody>
+                <!-- 3 lignes correspondant aux valeurs d'entrées -->
+                <tr>
+                    <td>Adresse :</td>
+                    <td class="ip"><?=$ip ?></td>
+                    <td colspan="2"><?=formatBinaire(adresseDecToBin($ip), $mask) ?></td>
+                </tr>
+                <tr>
+                    <td>Masque :</td>
+                    <td class="ip"><?="$maskIp => $mask" ?></td>
+                    <td colspan="2" class="mask"><?=formatBinaire(adresseDecToBin($maskIp), $mask) ?></td>
+                </tr>
+                <tr>
+                    <td>Inverse :</td>
+                    <td class="ip"><?=$wild ?></td>
+                    <td colspan="2"><?=formatBinaire(adresseDecToBin($wild), $mask) ?></td>
+                </tr>
+                
+                <tr>
+                    <td colspan="3">=></td>
+                </tr>
+
+                <!-- 4 lignes correspondant aux calculs fait sur les valeurs d'entrées -->
+                <tr>
+                    <td>Réseau :</td>
+                    <td class="ip"><?="$network / $mask" ?></td>
+                    <td><?=formatBinaire(adresseDecToBin($network), $mask) ?></td>
+                    <td class="classe">(Classe <?=getClasseAdresseIp($network) ?>)</td>
+                </tr>
+                <tr>
+                    <td>Diffusion :</td>
+                    <td class="ip"><?=$broadcast ?></td>
+                    <td colspan="2"><?=formatBinaire(adresseDecToBin($broadcast), $mask) ?></td>
+                </tr>
+                <tr>
+                    <td>HostMin :</td>
+                    <td class="ip"><?=$hostMin ?></td>
+                    <td colspan="2"><?=formatBinaire(adresseDecToBin($hostMin), $mask) ?></td>
+                </tr>
+                <tr>
+                    <td>HostMax :</td>
+                    <td class="ip"><?=$hostMax ?></td>
+                    <td colspan="2"><?=formatBinaire(adresseDecToBin($hostMax), $mask) ?></td>
+                </tr>
+                <tr>
+                    <td>Host/Net :</td>
+                    <td colspan="3" class="ip"><?=getHostByNet($mask) ?></td>
+                </tr>
+            </tbody>
+            </table>
+<?php
+            }else{
+                //Si une des valeurs d'entrées n'est pas bonne on affiche un message
+                echo "L'adresse $ip et/ou $maskIp ne sont pas des adresses valide";
+            }
         }
+    }else{
+?>
+    Vous avez atteint le nombre d'utilisation maximum de ce site.
+<?php
     }
 ?>
-
 </body>
 </html>
