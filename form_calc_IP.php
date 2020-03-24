@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="format.css">
 <?php
     include("calc_IP.php");
+    include("mysql.php");
 
     $doitAfficherTableau = false;
     $ip = "";
@@ -21,14 +22,14 @@
     $broadcast;
     $hostMin;
     $hostMax;
+    $authUtil = true;
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         //on incrémente le cookie d'utilisation de la page
-        ob_start();
+        /*ob_start();
         $nbUtil = isset($_COOKIE["nbUtil"]) ? $_COOKIE["nbUtil"]+1 : 1;
         setcookie("nbUtil", strval($nbUtil));
-        ob_end_flush();
-
+        ob_end_flush();*/
         $ip = $_POST["adresseIp"];
         $maskIp = $_POST["masque"];
         //pour avoir le masque sur 4 octets
@@ -48,13 +49,31 @@
             //host max est l'adresse avant celle de diffusion
             $hostMax = getIpBefore($broadcast);
         }
+
+        $con = getCon();
+        $res = select("SELECT * FROM License WHERE etat = 0", $con);
+        if(mysqli_num_rows($res) == 0){
+            $authUtil = false;
+        }else{
+            $row = mysqli_fetch_array($res);
+            update("License", "etat", "1", "id = " . $row["id"], $con);
+            commit($con);
+?>
+<script>
+            window.onbeforeunload = function () {
+                document.createElement("img").src = "end.php";
+            }
+</script>
+<?php
+        }
+        finish($con);
     }
 ?>    
 
 </head>
 <body>
 <?php
-    if($nbUtil <= 3){
+    if($authUtil){
 ?>
         <h1>Calculateur d'IP</h1>
         <form method="post" action="form_calc_IP.php">
@@ -146,7 +165,7 @@
         }
     }else{
 ?>
-    Vous avez atteint le nombre d'utilisation maximum de ce site.
+    Pas de License disponible actuellement, veuillez réessayer ultérieurement...
 <?php
     }
 ?>
