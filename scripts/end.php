@@ -1,5 +1,5 @@
 <?php
-include("mysql.php");
+include("../SQL/mysql.php");
 $con = getCon();
 $res = select("SELECT * FROM License WHERE etat = 1", $con);
 if(mysqli_num_rows($res) != 0){

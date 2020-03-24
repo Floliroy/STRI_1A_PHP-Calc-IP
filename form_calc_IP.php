@@ -8,10 +8,10 @@
 	<meta charset="UTF-8"/>
     <title>Calculateur d'IP</title>
     
-    <link rel="stylesheet" href="format.css">
+    <link rel="stylesheet" href="styles/format.css">
 <?php
-    include("calc_IP.php");
-    include("mysql.php");
+    include("scripts/calc_IP.php");
+    include("SQL/mysql.php");
 
     $doitAfficherTableau = false;
     $ip = "";
@@ -61,7 +61,7 @@
 ?>
 <script>
             window.onbeforeunload = function () {
-                document.createElement("img").src = "end.php";
+                document.createElement("img").src = "scripts/end.php";
             }
 </script>
 <?php
