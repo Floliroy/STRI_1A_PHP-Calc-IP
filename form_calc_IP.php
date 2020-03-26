@@ -61,7 +61,7 @@
 ?>
 <script>
             window.onbeforeunload = function () {
-                document.createElement("img").src = "scripts/end.php";
+                document.createElement("img").src = "scripts/end.php?id=<?=$row["id"]?>";
             }
 </script>
 <?php
